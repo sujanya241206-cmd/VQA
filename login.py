@@ -1,91 +1,23 @@
-import streamlit as st
-import sys
+import streamlit as st    #streamlit: used to build the web UI
+import sys                #sys & Path: used for handling file paths (commented out here)
 from pathlib import Path
 
 # Add parent directory to path
 #sys.path.append(str(Path(__file__).parent.parent))
 
-from auth import AuthManager
-
-# Page configuration
-#st.set_page_config(
-#    page_title="Login - VQA Smart Vision",
-#    page_icon="🔐",
-#    layout="wide"
-#)
+from auth import AuthManager            #AuthManager: custom class that manages:
+                                                            #>login
+                                                            #>registration
+                                                            #>fetching user info
 
 # Load CSS from main app
 def load_css():
-    st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(135deg, #1e1e2e 0%, #2d1b3d 50%, #1a1a2e 100%);
-    }
-    
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1e1e2e 0%, #2d1b3d 100%);
-    }
-    
-    .card {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        margin: 1rem 0;
-    }
-    
-    .main-header {
-        text-align: center;
-        color: #ffffff;
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    
-    h1, h2, h3 {
-        color: #ffffff !important;
-    }
-    
-    p, label, .stMarkdown {
-        color: #e0e0e0 !important;
-    }
-    
-    .stTextInput > div > div > input {
-        background-color: rgba(255, 255, 255, 0.1);
-        color: #ffffff;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
-    }
-    
-    .stButton > button {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 0.75rem 2rem;
-        font-weight: 600;
-        width: 100%;
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    }
-    
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    </style>
-    """, unsafe_allow_html=True)
+    st.markdown("</style>", unsafe_allow_html=True)
 
 load_css()
 
 # Initialize auth manager
-auth_manager = AuthManager()
+auth_manager = AuthManager()                #Creates an instance of the authentication system
 
 # Initialize session state
 if 'logged_in' not in st.session_state:
@@ -94,7 +26,9 @@ if 'logged_in' not in st.session_state:
 
 def login_page():
     st.markdown('<h1 class="main-header">Login</h1>', unsafe_allow_html=True)
-    
+    if st.session_state.get("login_message"):
+     st.success(st.session_state.login_message)
+    st.session_state.pop("login_message", None)
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
@@ -120,8 +54,7 @@ def login_page():
                         if success:
                             st.session_state.logged_in = True
                             st.session_state.username = username
-                            st.success(message)
-                            st.info("Redirecting to main page...")
+                            st.session_state.login_message = message
                             st.rerun()
                         else:
                             st.error(message)
